@@ -7,6 +7,11 @@
 *.o
 *.so
 *.uvprojx
+*.uvguix.yogur
+*.uvoptx
+/Listings
+/Objects
+/RTE
 
 # Packages #
 ############
