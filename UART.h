@@ -1,27 +1,14 @@
+//****************************************************************************
 // UART.h
-// Runs on TM4C1294
-// Simple device driver for the UART.
-// Daniel Valvano
-// May 29, 2014
-// Modified by EE345L students Charlie Gough && Matt Hawk
-// Modified by EE345M students Agustinus Darmawan && Mingjie Qiu
-
-/* This example accompanies the book
-   "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2014
-   Program 4.12, Section 4.9.4, Figures 4.26 and 4.40
-
- Copyright 2014 by Jonathan W. Valvano, valvano@mail.utexas.edu
-    You may use, edit, run or distribute this file
-    as long as the above copyright notice remains
- THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
- OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
- VALVANO SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL,
- OR CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
- For more information about my classes, my research, and my books, see
- http://users.ece.utexas.edu/~valvano/
- */
+// Runs on MSP432E401Y
+// Simple device driver for UART0.
+//
+// Copyright 2014 by Jonathan W. Valvano, valvano@mail.utexas.edu
+//    You may use, edit, run or distribute this file
+//    as long as the above copyright notice remains
+//
+//
+//****************************************************************************
 
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
@@ -36,7 +23,7 @@
 #define DEL  0x7F
 
 //------------UART_Init------------
-// Initialize UART0 for 115,200 baud rate (clock from 16 MHz PIOSC),
+// Initialize UART0 for 9600 baud rate (clock from 16 MHz PIOSC),
 // 8 bit word length, no parity bits, one stop bit, FIFOs enabled,
 // no interrupts
 // Input: none
@@ -54,6 +41,8 @@ char UART_InChar(void);
 // Input: letter is an 8-bit ASCII character to be transferred
 // Output: none
 void UART_OutChar(char data);
+
+void UART_OutCommand(uint32_t data); 
 
 //------------UART_OutString------------
 // Output String (NULL termination)
