@@ -1,3 +1,12 @@
+/*******************************************
+*	Name: Julian Torres
+* CPTR 480
+* 6/12/2018
+*	File Name: PWM.h
+*	Purpose: Holds PWM functions including control over motors such as turning.
+*******************************************/
+
+
 // PWM.h
 // Runs on TM4C1294
 // Use PWM0A/PF0 and PWM0B/PF1 to generate pulse-width modulated outputs.
@@ -20,6 +29,16 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+
+#ifndef PWM_H
+#define PWM_H
+
+#define LOW 2437
+#define SLOW_LOW 2750
+#define HIGH 3375
+#define SLOW_HIGH 2910
+#define NEUTRAL 2812
+
 
 // period is 16-bit number of PWM clock cycles in one period (3<=period)
 // period for PF0 and PF1 must be the same
@@ -46,3 +65,16 @@ void PWM0B_Init(uint16_t period, uint16_t duty);
 // change duty cycle of PWM0B/PF1
 // duty is number of PWM clock cycles output is high  (2<=duty<=period-1)
 void PWM0B_Duty(uint16_t duty);
+
+
+void PWM1A_Init(uint16_t period, uint16_t duty);
+void PWM1A_Duty(uint16_t duty);
+
+void TurnRight(uint32_t *middleSensor);
+void TurnLeft(uint32_t *middleSensor);
+void MoveStraight(void);
+void Stop(void);
+void CorrectLeft(void);
+void CorrectRight(void);
+
+#endif

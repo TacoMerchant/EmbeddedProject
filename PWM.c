@@ -1,3 +1,11 @@
+/*******************************************
+*	Name: Julian Torres
+* CPTR 480
+* 6/12/2018
+*	File Name: PWM.c
+*	Purpose: Holds PWM functions including control over motors such as turning.
+*******************************************/
+
 //****************************************************************************
 // PWM.c                                                                     *
 // Runs on MSP432E401Y                                                       *
@@ -24,6 +32,9 @@
 
 #include <stdint.h>
 #include "msp432e401y.h"
+#include "PWM.h"
+#include "Timer.h"
+
 
 
 //#define PWM_ENABLE_PWM1EN       0x00000002  // MnPWM1 Output Enable
@@ -145,3 +156,50 @@ void PWM1A_Duty(uint16_t duty){
 }
 
 
+void TurnRight(uint32_t *middleSensor) {
+	PWM0B_Duty(SLOW_LOW + 5);
+	PWM1A_Duty(SLOW_LOW);
+	WaitMs(500); 
+	while (*middleSensor < 2500){};
+	PWM0B_Duty(NEUTRAL);
+	PWM1A_Duty(NEUTRAL);
+}
+
+void TurnLeft(uint32_t *middleSensor) {
+	PWM0B_Duty(SLOW_HIGH - 20);
+	PWM1A_Duty(SLOW_HIGH);
+	WaitMs(500);
+	while (*middleSensor < 2500){};
+	PWM0B_Duty(NEUTRAL);
+	PWM1A_Duty(NEUTRAL);
+}
+
+void MoveStraight(void) {
+	// PF1 / Blue I want to be low
+	PWM0B_Duty(SLOW_LOW);
+	// PF2 / Yellow I want to be high
+	PWM1A_Duty(SLOW_HIGH);
+}
+
+void Stop(void) {
+	PWM0B_Duty(NEUTRAL);
+	PWM1A_Duty(NEUTRAL);
+}
+
+void CorrectLeft(void) {	
+	// High value PF1
+	PWM0B_Duty(SLOW_LOW + 10);
+	PWM1A_Duty(SLOW_HIGH);
+
+	WaitMs(50);
+	MoveStraight();
+}
+
+void CorrectRight(void) {
+	// Low value for both
+	PWM0B_Duty(SLOW_LOW);
+	PWM1A_Duty(SLOW_HIGH - 10);
+	
+	WaitMs(50);
+	MoveStraight();
+}

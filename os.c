@@ -1,18 +1,10 @@
 /*******************************************
 *	Name: Julian Torres
+* CPTR 480
+* 6/12/2018
 *	File Name: os.c
-*	Purpose: to test sample RTOS by adding 4th thread
-* 4/27/2018
-*	Results: Doesn't work. I couldn't figure out why but adding in 
-* 					A fourth task makes none of them work at all. I added
-						task 4 and set their priorities to the correct order,
-						but it still doesn't work so it is kind of pointless.
-						I didn't add the delay because the rest of it doesn't 
-						work in the first place.
+*	Purpose: Holds simple OS functions including the scheduler. There are only two threads.
 *******************************************/
-
-
-
 
 
 //****************************************************************************
@@ -27,6 +19,7 @@
 //****************************************************************************
 
 #include "msp.h"
+
 													// Sys. Handlers 12 to 15 Priority
 #define NVIC_SYS_PRI3_R         (*((volatile uint32_t *)0xE000ED20)) 
 
@@ -36,17 +29,46 @@ void OS_EnableInterrupts(void);  // Enable interrupts
 int32_t StartCritical(void);
 void EndCritical(int32_t primask);
 void StartOS(void);
+void Scheduler(void); 
+void PeriodicSensor(void);
+void OS_Wait(int32_t *s);
+void OS_Signal(int32_t *s);
 
-#define NUMTHREADS  4        // maximum number of threads    ///////////////////////////////////
-#define STACKSIZE   100      // number of 32-bit words in stack
+#define NUMTHREADS  2        // maximum number of threads    
+#define STACKSIZE   100      // number of 32-bit words in stack				
+
 struct tcb{
   int32_t *sp;       // pointer to stack (valid for threads not running
   struct tcb *next;  // linked-list pointer
 };
+
 typedef struct tcb tcbType;
 tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
+
+uint32_t Counter = 0;
+
+void OS_Signal(int32_t *s) {
+	OS_DisableInterrupts();
+	(*s) = (*s) + 1;
+	OS_EnableInterrupts();
+}
+
+void OS_Wait(int32_t *s) {
+	OS_DisableInterrupts();
+	while((*s) == 0) {
+		OS_EnableInterrupts();
+		OS_DisableInterrupts();
+	}
+	(*s) = (*s) - 1; 
+	OS_EnableInterrupts();
+}
+
+void Scheduler(void) {
+	PeriodicSensor();			// runs every ms
+	RunPt = RunPt->next;
+}
 
 // ******** OS_Init ************
 // initialize operating system, disable interrupts until OS_Launch
@@ -86,19 +108,15 @@ void SetInitialStack(int i){
 // Inputs: three pointers to a void/void foreground tasks
 // Outputs: 1 if successful, 0 if this thread can not be added
 int OS_AddThreads(void(*task0)(void),
-                 void(*task1)(void),
-                 void(*task2)(void),
-									 void(*task3)){ int32_t status; /////////////////////////////
+										void(*task1)(void)){
+
+	int32_t status; 
   status = StartCritical();
   tcbs[0].next = &tcbs[1]; // 0 points to 1
-  tcbs[1].next = &tcbs[2]; // 1 points to 2
-  tcbs[2].next = &tcbs[3]; // 2 points to 0
-	tcbs[3].next = &tcbs[0]; // 3 points to ? ////////////////////////////////
+  tcbs[1].next = &tcbs[0]; // 1 points to 2
 										 
   SetInitialStack(0); Stacks[0][STACKSIZE-2] = (int32_t)(task0); // PC
   SetInitialStack(1); Stacks[1][STACKSIZE-2] = (int32_t)(task1); // PC
-  SetInitialStack(2); Stacks[2][STACKSIZE-2] = (int32_t)(task2); // PC
-	SetInitialStack(3); Stacks[3][STACKSIZE-2] = (int32_t)(task3); // PC   /////////////////////////
   RunPt = &tcbs[0];       // thread 0 will run first
   EndCritical(status);
   return 1;               // successful
@@ -115,3 +133,4 @@ void OS_Launch(uint32_t SysCountValue){
 																		//    enable SysTick interrupt, auto reload
   StartOS();                   // start on the first task
 }
+

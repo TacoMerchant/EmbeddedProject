@@ -20,24 +20,23 @@
 #include <stdint.h>
 #include "UART.h"
 
-// UART0  Putty
-#define GPIO_PORTA_AFSEL_R      (*((volatile uint32_t *)0x40058420))
-#define GPIO_PORTA_DEN_R        (*((volatile uint32_t *)0x4005851C))
-#define GPIO_PORTA_AMSEL_R      (*((volatile uint32_t *)0x40058528))
-#define GPIO_PORTA_PCTL_R       (*((volatile uint32_t *)0x4005852C))
-#define UART0_DR_R              (*((volatile uint32_t *)0x4000C000))
-#define UART0_FR_R              (*((volatile uint32_t *)0x4000C018))
+#define GPIO_PORTA_AFSEL_R      (*((volatile uint32_t *)0x4005A420))
+#define GPIO_PORTA_DEN_R        (*((volatile uint32_t *)0x4005A51C))
+#define GPIO_PORTA_AMSEL_R      (*((volatile uint32_t *)0x4005A528))
+#define GPIO_PORTA_PCTL_R       (*((volatile uint32_t *)0x4005A52C))
+#define UART0_DR_R              (*((volatile uint32_t *)0x40013000))
+#define UART0_FR_R              (*((volatile uint32_t *)0x40013018))
 #define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
-#define UART0_IBRD_R            (*((volatile uint32_t *)0x4000C024))
-#define UART0_FBRD_R            (*((volatile uint32_t *)0x4000C028))
-#define UART0_LCRH_R            (*((volatile uint32_t *)0x4000C02C))
+#define UART0_IBRD_R            (*((volatile uint32_t *)0x40013024))
+#define UART0_FBRD_R            (*((volatile uint32_t *)0x40013028))
+#define UART0_LCRH_R            (*((volatile uint32_t *)0x4001302C))
 #define UART_LCRH_WLEN_8        0x00000060  // 8 bit word length
 #define UART_LCRH_FEN           0x00000010  // UART Enable FIFOs
-#define UART0_CTL_R             (*((volatile uint32_t *)0x4000C030))
+#define UART0_CTL_R             (*((volatile uint32_t *)0x40013030))
 #define UART_CTL_HSE            0x00000020  // High-Speed Enable
 #define UART_CTL_UARTEN         0x00000001  // UART Enable
-#define UART0_CC_R              (*((volatile uint32_t *)0x4000CFC8))
+#define UART0_CC_R              (*((volatile uint32_t *)0x40013FC8))
 #define UART_CC_CS_M            0x0000000F  // UART Baud Clock Source
 #define UART_CC_CS_SYSCLK       0x00000000  // System clock (based on clock
                                             // source and divisor factor)
@@ -48,54 +47,15 @@
 #define SYSCTL_ALTCLKCFG_ALTCLK_PIOSC                                         \
                                 0x00000000  // PIOSC
 #define SYSCTL_RCGCGPIO_R       (*((volatile uint32_t *)0x400FE608))
-#define SYSCTL_RCGCGPIO_R0      0x00000001  // GPIO Port A Run Mode Clock
+#define SYSCTL_RCGCGPIO_R0      0x00000004  // GPIO Port A Run Mode Clock
                                             // Gating Control
 #define SYSCTL_RCGCUART_R       (*((volatile uint32_t *)0x400FE618))
-#define SYSCTL_RCGCUART_R0      0x00000001  // UART Module 0 Run Mode Clock
+#define SYSCTL_RCGCUART_R0      0x00000080  // UART Module 0 Run Mode Clock
                                             // Gating Control
 #define SYSCTL_PRGPIO_R         (*((volatile uint32_t *)0x400FEA08))
-#define SYSCTL_PRGPIO_R0        0x00000001  // GPIO Port A Peripheral Ready
+#define SYSCTL_PRGPIO_R0        0x00000004  // GPIO Port A Peripheral Ready
 #define SYSCTL_PRUART_R         (*((volatile uint32_t *)0x400FEA18))
-#define SYSCTL_PRUART_R0        0x00000001  // UART Module 0 Peripheral Ready
-
-
-// UART7 PC5
-//#define GPIO_PORTA_AFSEL_R      (*((volatile uint32_t *)0x4005A420))
-//#define GPIO_PORTA_DEN_R        (*((volatile uint32_t *)0x4005A51C))
-//#define GPIO_PORTA_AMSEL_R      (*((volatile uint32_t *)0x4005A528))
-//#define GPIO_PORTA_PCTL_R       (*((volatile uint32_t *)0x4005A52C))
-//#define UART0_DR_R              (*((volatile uint32_t *)0x40013000))
-//#define UART0_FR_R              (*((volatile uint32_t *)0x40013018))
-//#define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
-//#define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
-//#define UART0_IBRD_R            (*((volatile uint32_t *)0x40013024))
-//#define UART0_FBRD_R            (*((volatile uint32_t *)0x40013028))
-//#define UART0_LCRH_R            (*((volatile uint32_t *)0x4001302C))
-//#define UART_LCRH_WLEN_8        0x00000060  // 8 bit word length
-//#define UART_LCRH_FEN           0x00000010  // UART Enable FIFOs
-//#define UART0_CTL_R             (*((volatile uint32_t *)0x40013030))
-//#define UART_CTL_HSE            0x00000020  // High-Speed Enable
-//#define UART_CTL_UARTEN         0x00000001  // UART Enable
-//#define UART0_CC_R              (*((volatile uint32_t *)0x40013FC8))
-//#define UART_CC_CS_M            0x0000000F  // UART Baud Clock Source
-//#define UART_CC_CS_SYSCLK       0x00000000  // System clock (based on clock
-//                                            // source and divisor factor)
-//#define UART_CC_CS_PIOSC        0x00000005  // PIOSC
-//#define SYSCTL_ALTCLKCFG_R      (*((volatile uint32_t *)0x400FE138))
-//#define SYSCTL_ALTCLKCFG_ALTCLK_M                                             \
-//                                0x0000000F  // Alternate Clock Source
-//#define SYSCTL_ALTCLKCFG_ALTCLK_PIOSC                                         \
-//                                0x00000000  // PIOSC
-//#define SYSCTL_RCGCGPIO_R       (*((volatile uint32_t *)0x400FE608))
-//#define SYSCTL_RCGCGPIO_R0      0x00000004  // GPIO Port A Run Mode Clock
-//                                            // Gating Control
-//#define SYSCTL_RCGCUART_R       (*((volatile uint32_t *)0x400FE618))
-//#define SYSCTL_RCGCUART_R0      0x00000080  // UART Module 0 Run Mode Clock
-//                                            // Gating Control
-//#define SYSCTL_PRGPIO_R         (*((volatile uint32_t *)0x400FEA08))
-//#define SYSCTL_PRGPIO_R0        0x00000004  // GPIO Port A Peripheral Ready
-//#define SYSCTL_PRUART_R         (*((volatile uint32_t *)0x400FEA18))
-//#define SYSCTL_PRUART_R0        0x00000080  // UART Module 0 Peripheral Ready
+#define SYSCTL_PRUART_R0        0x00000080  // UART Module 0 Peripheral Ready
 
 //------------UART_Init------------
 // Initialize UART0 for 115,200 baud rate (clock from 16 MHz PIOSC),
@@ -112,7 +72,7 @@ void UART_Init(void){
   while((SYSCTL_PRUART_R&SYSCTL_PRUART_R0) == 0){};
   UART0_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
   UART0_IBRD_R = 104;                     // IBRD = int(16,000,000 / (16 * 9600)) = int(104.1666)
-  UART0_FBRD_R = 11;                    // FBRD = round(0.1666 * 64) = 11 but emperically 40 is better
+  UART0_FBRD_R = 40;                    // FBRD = round(0.1666 * 64) = 11 but emperically 40 is better
                                         // 8 bit word length (no parity bits, one stop bit, FIFOs)
   UART0_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
                                         // UART gets its clock from the alternate clock source as defined by SYSCTL_ALTCLKCFG_R
@@ -123,11 +83,11 @@ void UART_Init(void){
   UART0_CTL_R |= UART_CTL_UARTEN;       // enable UART
                                         // allow time for clock to stabilize
   while((SYSCTL_PRGPIO_R&SYSCTL_PRGPIO_R0) == 0){};
-  GPIO_PORTA_AFSEL_R |= 0x3;           // enable alt funct on PA1-0
-  GPIO_PORTA_DEN_R |= 0x3;             // enable digital I/O on PA1-0
+  GPIO_PORTA_AFSEL_R |= 0x30;           // enable alt funct on PA1-0
+  GPIO_PORTA_DEN_R |= 0x30;             // enable digital I/O on PA1-0
                                         // configure PA1-0 as UART
-  GPIO_PORTA_PCTL_R = (GPIO_PORTA_PCTL_R & 0xFFFFFF00) + 0x00000011;
-  GPIO_PORTA_AMSEL_R &= ~0x3;          // disable analog functionality on PA
+  GPIO_PORTA_PCTL_R = (GPIO_PORTA_PCTL_R&0xFF00FFFF)+0x00110000;
+  GPIO_PORTA_AMSEL_R &= ~0x30;          // disable analog functionality on PA
 }
 
 //------------UART_InChar------------
@@ -308,14 +268,4 @@ char character;
     character = UART_InChar();
   }
   *bufPt = 0;
-}
-
-void OutCRLF(void) {
-  UART_OutChar(CR);
-	//UART_OutCommand(0xFE);
-	//UART_OutCommand(0x01);
-	
-	UART_OutChar(LF);
-//	UART_OutCommand(0xFE);
-//	UART_OutCommand(0x0A);
 }

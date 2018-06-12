@@ -22,6 +22,15 @@
 //// Output a CR,LF to UART to go to a new line
 //// Input: none
 //// Output: none
+//void OutCRLF(void){
+//  //UART_OutChar(CR);
+//	UART_OutCommand(0xFE);
+//	UART_OutCommand(0x01);
+//	
+//	//UART_OutChar(LF);
+////	UART_OutCommand(0xFE);
+////	UART_OutCommand(0x0A);
+//}
 
 //int main(void){
 ////  char i;
@@ -39,8 +48,7 @@
 ////  for(i='a'; i<='z'; i=i+1){// print the lowercase alphabet
 ////    UART_OutChar(i);
 ////  }
-//  OutCRLF();
-//	
+////   OutCRLF();
 //  UART_OutChar('-');
 //  UART_OutChar('-');
 //  UART_OutChar('>');
@@ -49,13 +57,6 @@
 ////	UART_OutCommand(0xFE); 			///////////////////temp
 ////	UART_OutChar('A'); 					//////////////////temp
 //  while(1){
-////		UART_OutChar('\n');
-////		
-////		UART_OutChar('-');
-////		UART_OutChar('-');
-////		UART_OutChar('>');
-
-//		
 ////                   Put code here for repeating I/O		
 ////    UART_OutChar('U');		// uncomment this line to send out character U
 //		

@@ -8,6 +8,9 @@
 //    as long as the above copyright notice remains
 //****************************************************************************
 
+#ifndef PLL_H
+#define PLL_H
+
 // The #define statement PSYSDIV initializes
 // the PLL to the desired frequency.
 #define PSYSDIV 3
@@ -41,3 +44,5 @@ PSYSDIV  SysClk (Hz)
  39      12,000,000
  79       6,000,000
 */
+
+#endif

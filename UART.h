@@ -10,6 +10,9 @@
 //
 //****************************************************************************
 
+#ifndef UART_H
+#define UART_H
+
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
 // Note: Connected LaunchPad JP4 and JP5 inserted parallel with long side of board.
@@ -99,3 +102,7 @@ void UART_OutUHex(uint32_t number);
 // Output: Null terminated string
 // -- Modified by Agustinus Darmawan + Mingjie Qiu --
 void UART_InString(char *bufPt, uint16_t max);
+
+void OutCRLF(void);
+
+#endif

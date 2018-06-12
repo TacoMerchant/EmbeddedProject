@@ -37,6 +37,7 @@
         EXPORT  SysTick_Handler
 		EXPORT	StartCritical
 		EXPORT	EndCritical
+		IMPORT	Scheduler
 
 OS_DisableInterrupts
         CPSID   I
@@ -70,10 +71,14 @@ SysTick_Handler                ; 1) Saves R0-R3,R12,LR,PC,PSR
     PUSH    {R4-R11}           ; 3) Save remaining regs r4-11
     LDR     R0, =RunPt         ; 4) R0=pointer to RunPt, old thread
     LDR     R1, [R0]           ;    R1 = RunPt
-    STR     SP, [R1]           ; 5) Save SP into TCB
-    LDR     R1, [R1,#4]        ; 6) R1 = RunPt->next
-    STR     R1, [R0]           ;    RunPt = R1
-    LDR     SP, [R1]           ; 7) new thread SP; SP = RunPt->sp;
+    STR     SP, [R1]           ; 5) Save SP into TCB 	// Suspend?
+    ;LDR     R1, [R1,#4]        ; 6) R1 = RunPt->next	// Replace this with Scheduler?
+    ;STR     R1, [R0]           ;    RunPt = R1	
+    PUSH	{R0,LR}
+	BL		Scheduler
+	POP		{R0,LR}
+	LDR		R1, [R0]
+	LDR     SP, [R1]           ; 7) new thread SP; SP = RunPt->sp;
     POP     {R4-R11}           ; 8) restore regs r4-11
     CPSIE   I                  ; 9) tasks run with interrupts enabled
     BX      LR                 ; 10) restore R0-R3,R12,LR,PC,PSR
